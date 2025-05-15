@@ -1,7 +1,7 @@
 {
-  "name": "rabbit-server-application",
+  "name": "wisent-server-application",
   "version": "1.0.0",
-  "description": "Серверний додаток для сайту про зайців",
+  "description": "Серверний додаток для сайту про зубрів",
   "main": "dist/src/server.js",
   "scripts": {
     "start": "node dist/src/server.js",
