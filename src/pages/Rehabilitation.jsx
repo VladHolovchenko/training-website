@@ -5,34 +5,35 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import { API_BASE_URL } from '../config/api';
 import { Toast } from 'bootstrap';
 
-// Компонент для управління зайцями, які перебувають на реабілітації, через API
+// Компонент для управління зубрами, які перебувають на реабілітації, через API
 function Rehabilitation() {  // Стан для зберігання даних та стану інтерфейсу
-  const [rabbits, setRabbits] = useState([]);
+  const [wisents, setWisents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false); // Стан для модального вікна видалення
-  const [rabbitToDelete, setRabbitToDelete] = useState(null); // Ідентифікатор зайця для видалення
-  const [currentRabbit, setCurrentRabbit] = useState(null);
+  const [wisentToDelete, setWisentToDelete] = useState(null); // Ідентифікатор зубра для видалення
+  const [currentWisent, setCurrentWisent] = useState(null);
   const [toastMessage, setToastMessage] = useState({ text: '', type: 'success' });
   
   // Посилання до елемента спливаючих сповіщень toast
   const toastRef = useRef(null);
-  // Стан форми для додавання/редагування зайців
+  // Стан форми для додавання/редагування зубрів
   const [formData, setFormData] = useState({
     name: '',
     age: '',
     height: '',
     weight: '',
+    hornLength: '',
     gender: 'male',
     description: ''
   });
 
-  // При рендерингу компонента, отримуємо всіх зайців
+  // При рендерингу компонента, отримуємо всіх зубрів
   useEffect(() => {
-    document.title = 'Реабілітація зайців - Сайт про зайців';
-    fetchRabbits();
+    document.title = 'Реабілітація зубрів - Сайт про зубрів';
+    fetchWisents();
   }, []);
 
   // Показуємо toast повідомлення, коли змінюється toastMessage
@@ -43,18 +44,18 @@ function Rehabilitation() {  // Стан для зберігання даних 
     }
   }, [toastMessage]);
   
-  // Отримуємо всіх зайців з API
-  const fetchRabbits = async () => {
+  // Отримуємо всіх зубрів з API
+  const fetchWisents = async () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await axios.get(`${API_BASE_URL}/rabbits`);
-      setRabbits(Array.isArray(response.data) ? response.data : []);
+      const response = await axios.get(`${API_BASE_URL}/wisents`);
+      setWisents(Array.isArray(response.data) ? response.data : []);
 
     } catch (err) {
       setError(`Помилка завантаження даних: ${err.message}`);
-      console.error('Помилка при отриманні даних про зайців:', err);
-      setRabbits([]);
+      console.error('Помилка при отриманні даних про зубрів:', err);
+      setWisents([]);
 
     } finally {
       setLoading(false);
@@ -67,7 +68,7 @@ function Rehabilitation() {  // Стан для зберігання даних 
     let processedValue = value;
     
     // Конвертуємо числові значення з рядків у числа
-    if (['age', 'height', 'weight'].includes(name)) {
+    if (['age', 'height', 'weight', 'hornLength'].includes(name)) {
       processedValue = value === '' ? '' : Number(value);
     }
     
@@ -77,75 +78,77 @@ function Rehabilitation() {  // Стан для зберігання даних 
     });
   };
 
-  // Відкриваємо модальне вікно для додавання нового зайця
+  // Відкриваємо модальне вікно для додавання нового зубра
   const handleShowAddModal = () => {
     setFormData({
       name: '',
       age: '',
       height: '',
       weight: '',
+      hornLength: '',
       gender: 'male',
       description: ''
     });
     setShowAddModal(true);
   };
 
-  // Відкриваємо модальне вікно для редагування зайця
-  const handleShowEditModal = (rabbit) => {
-    setCurrentRabbit(rabbit);
+  // Відкриваємо модальне вікно для редагування зубра
+  const handleShowEditModal = (wisent) => {
+    setCurrentWisent(wisent);
     setFormData({
-      name: rabbit.name,
-      age: rabbit.age,
-      height: rabbit.height,
-      weight: rabbit.weight,
-      gender: rabbit.gender,
-      description: rabbit.description || ''
+      name: wisent.name,
+      age: wisent.age,
+      height: wisent.height,
+      weight: wisent.weight,
+      hornLength: wisent.hornLength,
+      gender: wisent.gender,
+      description: wisent.description || ''
     });
     setShowEditModal(true);
   };
 
-  // Додаємо нового зайця
-  const handleAddRabbit = async (e) => {
+  // Додаємо нового зубра
+  const handleAddWisent = async (e) => {
     e.preventDefault();
     
     try {
       setLoading(true);
-      const response = await axios.post(`${API_BASE_URL}/rabbits`, formData);
-      const newRabbit = response.data;
-      setRabbits([...rabbits, newRabbit]);
+      const response = await axios.post(`${API_BASE_URL}/wisents`, formData);
+      const newWisent = response.data;
+      setWisents([...wisents, newWisent]);
       setShowAddModal(false);
-      setToastMessage({ text: `Зайця "${newRabbit.name}" успішно додано!`, type: 'success' });
+      setToastMessage({ text: `Зубра "${newWisent.name}" успішно додано!`, type: 'success' });
 
     } catch (err) {
       const errorMessage = err.response?.data?.message || err.message;
       setError(`Помилка при створенні: ${errorMessage}`);
       setToastMessage({ text: `Помилка при створенні: ${errorMessage}`, type: 'danger' });
-      console.error('Помилка при додаванні зайця:', err);
+      console.error('Помилка при додаванні зубра:', err);
 
     } finally {
       setLoading(false);
     }
   };
 
-  // Оновлюємо існуючого зайця
-  const handleUpdateRabbit = async (e) => {
+  // Оновлюємо існуючого зубра
+  const handleUpdateWisent = async (e) => {
     e.preventDefault();
     
     try {
       setLoading(true);
-      const response = await axios.put(`${API_BASE_URL}/rabbits/${currentRabbit._id}`, formData);
-      const updatedRabbit = response.data;
-      setRabbits(rabbits.map(rabbit => 
-        rabbit._id === currentRabbit._id ? updatedRabbit : rabbit
+      const response = await axios.put(`${API_BASE_URL}/wisents/${currentWisent._id}`, formData);
+      const updatedWisent = response.data;
+      setWisents(wisents.map(wisent => 
+        wisent._id === currentWisent._id ? updatedWisent : wisent
       ));
       setShowEditModal(false);
-      setToastMessage({ text: `Дані про зайця "${updatedRabbit.name}" оновлено!`, type: 'success' });
+      setToastMessage({ text: `Дані про зубра "${updatedWisent.name}" оновлено!`, type: 'success' });
 
     } catch (err) {
       const errorMessage = err.response?.data?.message || err.message;
       setError(`Помилка при оновленні: ${errorMessage}`);
       setToastMessage({ text: `Помилка при оновленні: ${errorMessage}`, type: 'danger' });
-      console.error('Помилка при оновленні зайця:', err);
+      console.error('Помилка при оновленні зубра:', err);
       
     } finally {
       setLoading(false);
@@ -153,26 +156,26 @@ function Rehabilitation() {  // Стан для зберігання даних 
   };
    
   // Показуємо модальне вікно підтвердження видалення
-  const handleShowDeleteModal = (rabbit) => {
-    setRabbitToDelete(rabbit);
+  const handleShowDeleteModal = (wisent) => {
+    setWisentToDelete(wisent);
     setShowDeleteModal(true);
   };
 
-  // Видаляємо зайця
-  const handleDeleteRabbit = async () => {
+  // Видаляємо зубра
+  const handleDeleteWisent = async () => {
     try {
       setLoading(true);
-      await axios.delete(`${API_BASE_URL}/rabbits/${rabbitToDelete._id}`);
-      setRabbits(rabbits.filter(rabbit => rabbit._id !== rabbitToDelete._id));
-      setToastMessage({ text: `Зайця "${rabbitToDelete.name}" успішно видалено!`, type: 'success' });
+      await axios.delete(`${API_BASE_URL}/wisents/${wisentToDelete._id}`);
+      setWisents(wisents.filter(wisent => wisent._id !== wisentToDelete._id));
+      setToastMessage({ text: `Зубра "${wisentToDelete.name}" успішно видалено!`, type: 'success' });
       setShowDeleteModal(false); // Закриваємо модальне вікно
-      setRabbitToDelete(null); // Очищаємо дані зайця для видалення
+      setWisentToDelete(null); // Очищаємо дані зубра для видалення
 
     } catch (err) {
       const errorMessage = err.response?.data?.message || err.message;
       setError(`Помилка при видаленні: ${errorMessage}`);
       setToastMessage({ text: `Помилка при видаленні: ${errorMessage}`, type: 'danger' });
-      console.error('Помилка при видаленні зайця:', err);
+      console.error('Помилка при видаленні зубра:', err);
 
     } finally {
       setLoading(false);
@@ -188,13 +191,13 @@ function Rehabilitation() {  // Стан для зберігання даних 
   return (
     <main className="container px-4 py-4">
       <header className="d-flex justify-content-between align-items-center mb-4">
-        <h1 className="h2 text-success">Реабілітація зайців</h1>
+        <h1 className="h2 text-success">Реабілітація зубрів</h1>
         <button 
           className="btn btn-success" 
           onClick={handleShowAddModal}
           disabled={loading}
         >
-          Додати зайця
+          Додати зубра
         </button>
       </header>
 
@@ -229,23 +232,23 @@ function Rehabilitation() {  // Стан для зберігання даних 
         </div>
       </div>
 
-      {/* Таблиця зайців */}
+      {/* Таблиця зубрів */}
       {loading && !error && (
         <div className="text-center my-5">
           <div className="spinner-border text-success" role="status">
             <span className="visually-hidden">Завантаження...</span>
           </div>
-          <p className="mt-2">Завантаження записів зайців...</p>
+          <p className="mt-2">Завантаження записів зубрів...</p>
         </div>
       )}
       
-      {!loading && rabbits.length === 0 && (
+      {!loading && wisents.length === 0 && (
         <section className="alert alert-info">
-          Немає доступних записів про зайців у реабілітації. Додайте першого зайця!
+          Немає доступних записів про зубрів у реабілітації. Додайте першого зубра!
         </section>
       )}
       
-      {!loading && rabbits.length > 0 && (
+      {!loading && wisents.length > 0 && (
         <section className="table-responsive">
           <table className="table table-striped table-bordered table-hover vertical-align-middle">
             <thead>
@@ -254,6 +257,7 @@ function Rehabilitation() {  // Стан для зберігання даних 
                 <th>Вік (роки)</th>
                 <th>Висота (см)</th>
                 <th>Вага (кг)</th>
+                <th>Довжина рогів (см)</th>
                 <th>Стать</th>
                 <th>Опис</th>
                 <th>Дата додавання</th>
@@ -261,20 +265,21 @@ function Rehabilitation() {  // Стан для зберігання даних 
               </tr>
             </thead>
             <tbody>
-              {rabbits.map(rabbit => (
-                <tr key={rabbit._id}>
-                  <td>{rabbit.name}</td>
-                  <td>{rabbit.age}</td>
-                  <td>{rabbit.height}</td>
-                  <td>{rabbit.weight}</td>
-                  <td>{rabbit.gender === 'male' ? 'Самець' : 'Самиця'}</td>
-                  <td>{rabbit.description}</td>
-                  <td>{rabbit.dateAdded ? formatDate(rabbit.dateAdded) : 'Н/Д'}</td>
+              {wisents.map(wisent => (
+                <tr key={wisent._id}>
+                  <td>{wisent.name}</td>
+                  <td>{wisent.age}</td>
+                  <td>{wisent.height}</td>
+                  <td>{wisent.weight}</td>
+                  <td>{wisent.hornLength}</td>
+                  <td>{wisent.gender === 'male' ? 'Самець' : 'Самиця'}</td>
+                  <td>{wisent.description}</td>
+                  <td>{wisent.dateAdded ? formatDate(wisent.dateAdded) : 'Н/Д'}</td>
                   <td>
                     <button
                       type="button"
                       className="btn btn-outline-primary btn-sm me-2"
-                      onClick={() => handleShowEditModal(rabbit)}
+                      onClick={() => handleShowEditModal(wisent)}
                       disabled={loading}
                     >
                       Редагувати
@@ -282,7 +287,7 @@ function Rehabilitation() {  // Стан для зберігання даних 
                     <button
                       type="button"
                       className="btn btn-outline-danger btn-sm"
-                      onClick={() => handleShowDeleteModal(rabbit)}
+                      onClick={() => handleShowDeleteModal(wisent)}
                       disabled={loading}
                     >
                       Видалити
@@ -295,23 +300,23 @@ function Rehabilitation() {  // Стан для зберігання даних 
         </section>
       )}
 
-      {/* Модальне вікно для додавання нового зайця */}
+      {/* Модальне вікно для додавання нового зубра */}
       <div 
         className={`modal fade ${showAddModal ? 'show' : ''}`} 
-        id="addRabbitModal" 
+        id="addWisentModal" 
         tabIndex="-1" 
-        aria-labelledby="addRabbitModalLabel" 
+        aria-labelledby="addWisentModalLabel" 
         aria-hidden="true"
         style={{ display: showAddModal ? 'block' : 'none' }}
       >
         <div className="modal-dialog modal-dialog-centered">
           <div className="modal-content">
             <header className="modal-header">
-              <h2 className="modal-title h5" id="addRabbitModalLabel">Додати нового зайця</h2>
+              <h2 className="modal-title h5" id="addWisentModalLabel">Додати нового зубра</h2>
               <button type="button" className="btn-close" onClick={() => setShowAddModal(false)} aria-label="Закрити"></button>
             </header>
             <div className="modal-body">
-              <form onSubmit={handleAddRabbit}>
+              <form onSubmit={handleAddWisent}>
                 <fieldset>
                   <div className="row mb-3">
                     <label htmlFor="name" className="col-sm-3 col-form-label">Ім'я</label>
@@ -380,6 +385,23 @@ function Rehabilitation() {  // Стан для зберігання даних 
                   </div>
 
                   <div className="row mb-3">
+                    <label htmlFor="hornLength" className="col-sm-3 col-form-label">Висота рогів (см)</label>
+                    <div className="col-sm-9">
+                      <input 
+                        type="number" 
+                        className="form-control" 
+                        id="hornLength" 
+                        name="hornLength" 
+                        value={formData.hornLength} 
+                        onChange={handleInputChange}
+                        required
+                        min="0"
+                        step="0.1"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="row mb-3">
                     <label htmlFor="gender" className="col-sm-3 col-form-label">Стать</label>
                     <div className="col-sm-9">
                       <select 
@@ -420,7 +442,7 @@ function Rehabilitation() {  // Стан для зберігання даних 
                         <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
                         Зачекайте...
                       </>
-                    ) : 'Додати зайця'}
+                    ) : 'Додати зубра'}
                   </button>
                 </footer>
               </form>
@@ -435,23 +457,23 @@ function Rehabilitation() {  // Стан для зберігання даних 
              onClick={() => setShowAddModal(false)}></div>
       )}
 
-      {/* Модальне вікно для редагування існуючого зайця */}
+      {/* Модальне вікно для редагування існуючого зубра */}
       <div 
         className={`modal fade ${showEditModal ? 'show' : ''}`} 
-        id="editRabbitModal" 
+        id="editWisentModal" 
         tabIndex="-1" 
-        aria-labelledby="editRabbitModalLabel" 
+        aria-labelledby="editWisentModalLabel" 
         aria-hidden="true"
         style={{ display: showEditModal ? 'block' : 'none' }}
       >
         <div className="modal-dialog modal-dialog-centered">
           <div className="modal-content">
             <header className="modal-header">
-              <h2 className="modal-title h5" id="editRabbitModalLabel">Редагувати зайця</h2>
+              <h2 className="modal-title h5" id="editWisentModalLabel">Редагувати зубра</h2>
               <button type="button" className="btn-close" onClick={() => setShowEditModal(false)} aria-label="Закрити"></button>
             </header>
             <div className="modal-body">
-              <form onSubmit={handleUpdateRabbit}>
+              <form onSubmit={handleUpdateWisent}>
                 <fieldset>
                   <div className="row mb-3">
                     <label htmlFor="edit-name" className="col-sm-3 col-form-label">Ім'я</label>
@@ -520,6 +542,23 @@ function Rehabilitation() {  // Стан для зберігання даних 
                   </div>
 
                   <div className="row mb-3">
+                    <label htmlFor="edit-hornLength" className="col-sm-3 col-form-label">Висота рогів (см)</label>
+                    <div className="col-sm-9">
+                      <input 
+                        type="number" 
+                        className="form-control" 
+                        id="edit-hornLength" 
+                        name="hornLength" 
+                        value={formData.hornLength} 
+                        onChange={handleInputChange}
+                        required
+                        min="0"
+                        step="0.1"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="row mb-3">
                     <label htmlFor="edit-gender" className="col-sm-3 col-form-label">Стать</label>
                     <div className="col-sm-9">
                       <select 
@@ -575,24 +614,24 @@ function Rehabilitation() {  // Стан для зберігання даних 
              onClick={() => setShowEditModal(false)}></div>
       )}
 
-      {/* Модальне вікно для підтвердження видалення зайця */}
+      {/* Модальне вікно для підтвердження видалення зубра */}
       <div 
         className={`modal fade ${showDeleteModal ? 'show' : ''}`} 
-        id="deleteRabbitModal" 
+        id="deleteWisentModal" 
         tabIndex="-1" 
-        aria-labelledby="deleteRabbitModalLabel" 
+        aria-labelledby="deleteWisentModalLabel" 
         aria-hidden="true"
         style={{ display: showDeleteModal ? 'block' : 'none' }}
       >
         <div className="modal-dialog modal-dialog-centered">
           <div className="modal-content">
             <header className="modal-header">
-              <h2 className="modal-title h5" id="deleteRabbitModalLabel">Підтвердження видалення</h2>
+              <h2 className="modal-title h5" id="deleteWisentModalLabel">Підтвердження видалення</h2>
               <button type="button" className="btn-close" onClick={() => setShowDeleteModal(false)} aria-label="Закрити"></button>
             </header>
             <div className="modal-body">
-              {rabbitToDelete && (
-                <p>Ви впевнені, що хочете видалити зайця <strong>{rabbitToDelete.name}</strong>?</p>
+              {wisentToDelete && (
+                <p>Ви впевнені, що хочете видалити зубра <strong>{wisentToDelete.name}</strong>?</p>
               )}
             </div>
             <footer className="modal-footer">              
@@ -602,7 +641,7 @@ function Rehabilitation() {  // Стан для зберігання даних 
               <button 
                 type="button" 
                 className="btn btn-danger" 
-                onClick={handleDeleteRabbit}
+                onClick={handleDeleteWisent}
                 disabled={loading}
               >
                 {loading ? (

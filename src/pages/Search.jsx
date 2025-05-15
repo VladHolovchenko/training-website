@@ -10,7 +10,7 @@ function Search() {
 
   useEffect(() => {
     if (query) {
-      document.title = `Пошук: ${query} - Сайт про зайців`;
+      document.title = `Пошук: ${query} - Сайт про зубрів`;
       handleSearch(query);
     }
   }, [query, handleSearch]);

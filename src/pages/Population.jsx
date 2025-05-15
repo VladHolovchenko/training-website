@@ -20,7 +20,7 @@ function Population() {
         </aside>
 
         <article className="col-md-9">
-          <h2 className="h2 text-success mb-4">Ареал поширення зайців</h2>
+          <h2 className="h2 text-success mb-4">Ареал поширення зубрів</h2>
           
           <section id="continents" className="mt-4">
             <h3>

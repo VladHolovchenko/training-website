@@ -1,18 +1,19 @@
 import { Schema, model } from 'mongoose';
 
-// Інтерфейс для об'єкта "Заєць"
-interface IRabbit {
-    name: string; // Ім'я зайця
-    age: number; // Вік зайця у роках
-    height: number; // Висота зайця в сантиметрах
-    weight: number; // Вага зайця в кілограмах
-    gender: 'male' | 'female'; // Стать зайця: 'male' - самець, 'female' - самка
-    description?: string; // Опис зайця (необов'язкове поле)
+// Інтерфейс для об'єкта "Зубр"
+interface IWisent {
+    name: string; // Ім'я зубра
+    age: number; // Вік зубра у роках
+    height: number; // Висота зубра в сантиметрах
+    weight: number; // Вага зубра в кілограмах
+    hornLength: number; // Довжина рогів в сантиметрах
+    gender: 'male' | 'female'; // Стать зубра: 'male' - самець, 'female' - самка
+    description?: string; // Опис зубра (необов'язкове поле)
     dateAdded: Date; // Дата додавання запису до бази даних
 }
 
-// Схема MongoDB для моделі "Заєць"
-const rabbitSchema = new Schema<IRabbit>({
+// Схема MongoDB для моделі "Зубр"
+const wisentSchema = new Schema<IWisent>({
     name: {
         type: String,
         required: true, // Поле є обов'язковим
@@ -29,6 +30,10 @@ const rabbitSchema = new Schema<IRabbit>({
         type: Number,
         required: true, // Поле є обов'язковим
     },
+    hornLength: {
+        type: Number,
+        required: true, // Поле є обов'язковим
+    },
     gender: {
         type: String,
         required: true, // Поле є обов'язковим
@@ -42,5 +47,5 @@ const rabbitSchema = new Schema<IRabbit>({
 });
 
 // Створення моделі Mongoose на основі схеми
-export const Rabbit = model<IRabbit>('Rabbit', rabbitSchema);
-export type { IRabbit }; // Експортуємо інтерфейс для використання в інших файлах
+export const Wisent = model<IWisent>('Wisent', wisentSchema);
+export type { IWisent }; // Експортуємо інтерфейс для використання в інших файлах
